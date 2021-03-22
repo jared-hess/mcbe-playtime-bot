@@ -13,6 +13,7 @@
     "rules": {
         "no-console": "off",
         "no-underscore-dangle": "off",
-        "no-confusing-arrow": ["error", {"allowParens": true}]
+        "no-confusing-arrow": ["error", {"allowParens": true}],
+        "indent": ["error", 2]
     }
 }
