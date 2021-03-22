@@ -10,16 +10,16 @@ client.commands = new Discord.Collection();
 client.db = db;
 
 // Env Vars
-const prefix = process.env.PREFIX
-const token = process.env.DISCORD_TOKEN
+const prefix = process.env.PREFIX;
+const token = process.env.DISCORD_TOKEN;
 
 // Setup discord command folder
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-commandFiles.forEach(file => {
+const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
+commandFiles.forEach((file) => {
+  // eslint-disable-next-line import/no-dynamic-require
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
-})
-
+});
 
 const rawdata = fs.readFileSync('data.json');
 const data = JSON.parse(rawdata);
@@ -74,9 +74,8 @@ client.on('message', (message) => {
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
-
   const command = client.commands.get(commandName)
-    || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    || client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
   if (!command) return;
 
@@ -107,9 +106,7 @@ client.on('message', (message) => {
     console.error(error);
     message.reply('there was an error trying to execute that command!');
   }
-
 });
 
 // Log our bot in using the token from https://discord.com/developers/applications
 client.login(token);
-
