@@ -3,6 +3,8 @@
 
 var moment = require('moment');
 var stringify = require('csv-stringify');
+var Datastore = require('nedb');
+var db = new Datastore();
 
 
 const fs = require('fs');
@@ -29,6 +31,7 @@ for (const i in messages){
 			var end = timestamp;
 			var duration = moment.duration(end.diff(start));
 			var session = {name: name, start: start, duration: duration};
+			db.insert(session, (err, doc) => console.log('Inserted', doc.name, 'with ID', doc._id))
 			sessions.push(session);
 			delete logins[name]
 		} else {
@@ -40,6 +43,7 @@ for (const i in messages){
 			var end = timestamp;
 			var duration = moment.duration(end.diff(start));
 			var session = {name: name, start: start, duration: duration};
+			db.insert(session, (err, doc) => console.log('Inserted', doc.name, 'with ID', doc._id))
 			sessions.push(session);
 			delete logins[name];
 		}
@@ -48,17 +52,3 @@ for (const i in messages){
 }
 
 
-
-for (const i in sessions){
-	session = sessions[i];
-	console.log("Session for " + session.name + " started at " + session.start.format() + " lasting for " + session.duration.humanize());
-}
-
-var sessions_formatted = sessions.map(x => ({name: x.name, start: x.start.format(), duration: x.duration.asSeconds()}));
-
-stringify(sessions_formatted, {
-    header: true
-}, function (err, output) {
-    // console.log(output);
-	fs.writeFile(__dirname+'/someData.csv', output, (err, result) => {} );
-})
