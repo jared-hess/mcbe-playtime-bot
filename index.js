@@ -35,7 +35,7 @@ Object.keys(messages).forEach(i => {
       console.log(`Disconnect for ${name} found with no connect. Skipping...`);
     }
   } else if (content.includes(' stopping')) {
-    logins.forEach(name => {
+    Object.keys(logins).forEach(name => {
       const start = logins[name];
       const end = timestamp;
       const duration = moment.duration(end.diff(start));
