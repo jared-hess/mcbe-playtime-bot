@@ -66,9 +66,9 @@ module.exports = {
       result.toArray((err, docs) => {
         console.log(docs);
         docs.reverse();
-        const labels = docs.map(x => moment(x._id.date).format("ddd"));
-        const data = docs.map(x => x.total);
-        const label = "Hours"
+        const labels = docs.map((x) => moment(x._id.date).format('ddd'));
+        const data = docs.map((x) => x.total);
+        const label = 'Hours';
 
         const chart = new QuickChart();
         chart.setConfig({
@@ -77,7 +77,7 @@ module.exports = {
         });
         const chartEmbed = {
           title: 'Playtime',
-          description: `Playtime for user  ${name}  over the last week`,
+          description: `Playtime for user ${name} over the last week`,
           image: {
             url: chart.getUrl(),
           },
@@ -85,6 +85,5 @@ module.exports = {
         message.channel.send({ embed: chartEmbed });
       });
     });
-
   },
 };
