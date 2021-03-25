@@ -25,8 +25,11 @@
     "dotenv": "^8.2.0",
     "husky": "^5.2.0",
     "moment": "^2.29.1",
+    "mongodb": "^3.6.5",
     "mrm": "^2.6.1",
-    "nedb": "^1.8.0"
+    "nedb": "^1.8.0",
+    "quickchart-js": "^1.0.7",
+    "splitargs": "0.0.7"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
