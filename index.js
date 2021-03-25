@@ -3,6 +3,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { MongoClient } = require('mongodb');
 const splitargs = require('splitargs');
+const fetchAll = require('discord-fetch-all');
 
 // Env Vars
 const prefix = process.env.PREFIX;
@@ -74,8 +75,18 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     }
   });
 
-  client.on('ready', () => {
+  client.on('ready', async () => {
     console.log('I am ready!');
+    const guild = client.guilds.cache.find( x => x.name === 'Telepath Test Server');
+    const channel = guild.channels.cache.find( x => x.name === 'server-joins');
+    const allMessages = await fetchAll.messages(channel, {
+      reverseArray: true, // Reverse the returned array
+      userOnly: false, // Only return messages by users
+      botOnly: true, // Only return messages by bots
+      pinnedOnly: false, // Only returned pinned messages
+  });
+  console.log(allMessages);
+
   });
 
   // Create an event listener for messages
