@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const { MongoClient } = require('mongodb');
 const splitargs = require('splitargs');
 const fetchAll = require('discord-fetch-all');
+const { SessionManager } = require('./utils/session-manager');
 
 // Env Vars
 const prefix = process.env.PREFIX;
@@ -19,6 +20,8 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
   client.commands = new Discord.Collection();
   client.db = { sessions };
 
+  // Session manager
+  const sessionManager = new SessionManager(sessions);
   // Setup discord command folder
   const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
   commandFiles.forEach((file) => {
@@ -27,53 +30,15 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     client.commands.set(command.name, command);
   });
 
-  const rawdata = fs.readFileSync('data.json');
-  const data = JSON.parse(rawdata);
-  const { messages } = data;
-  let logins = {};
-  Object.keys(messages).forEach((i) => {
-    const message = messages[i];
-    const { content } = message;
-    const timestamp = new Date(message.timestamp);
-    console.log(`${content} ${timestamp}`);
+  // const rawdata = fs.readFileSync('data.json');
+  // const data = JSON.parse(rawdata);
+  // const { messages } = data;
+  // Object.keys(messages).forEach((i) => {
+  //   const message = messages[i];
 
-    if (content.includes(' connected ')) {
-      const { id } = message;
-      const name = content.split(' connected ')[0];
-      logins[name] = { timestamp, id };
-    } else if (content.includes(' disconnected ')) {
-      const name = content.split(' disconnected ')[0];
+  //   sessionManager.parseMessage(message);
 
-      if (name in logins) {
-        const start = logins[name].timestamp;
-        const { id } = logins[name];
-        const end = timestamp;
-        const duration = end - start;
-        console.log('duration:', duration);
-        const session = {
-          name, session_id: id, start, end, duration,
-        };
-        sessions.insertOne(session, (err, doc) => console.log(doc));
-        delete logins[name];
-      } else {
-        console.log(`Disconnect for ${name} found with no connect. Skipping...`);
-      }
-    } else if (content.includes(' stopping')) {
-      Object.keys(logins).forEach((name) => {
-        const start = logins[name].timestamp;
-        const { id } = logins[name];
-        const end = timestamp;
-        const duration = end - start;
-        console.log('duration:', duration);
-        const session = {
-          name, session_id: id, start, end, duration,
-        };
-        sessions.insertOne(session, (err, doc) => console.log(doc));
-        delete logins[name];
-      });
-      logins = {};
-    }
-  });
+  // });
 
   client.on('ready', async () => {
     console.log('I am ready!');
@@ -85,14 +50,21 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
       botOnly: true, // Only return messages by bots
       pinnedOnly: false, // Only returned pinned messages
     });
-    console.log(allMessages);
+    // console.log(allMessages);
+    allMessages.forEach((message) => {
+      console.log(message);
+      sessionManager.parseMessage(message);
+    });
   });
 
   // Create an event listener for messages
   client.on('message', (message) => {
+    if (message.channel.name === 'server-joins') {
+      sessionManager.parseMessage(message);
+    }
+
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-    // const args = message.content.slice(prefix.length).trim().split(/ +/);
     const args = splitargs(message.content.slice(prefix.length).trim());
     const commandName = args.shift().toLowerCase();
 
