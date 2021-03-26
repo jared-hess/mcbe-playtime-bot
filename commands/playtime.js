@@ -24,7 +24,7 @@ module.exports = {
     const momentRange = moment.range(startDate, endDate);
     console.log(momentRange);
 
-    console.log(Array.from(momentRange.by("day")).map( x => x.format("YYYY-MM-DD")))
+    console.log(Array.from(momentRange.by('day')).map((x) => x.format('YYYY-MM-DD')));
 
     const agg = [
       {
@@ -61,7 +61,7 @@ module.exports = {
             },
           },
         },
-      }, 
+      },
 
       {
         $project: {
@@ -79,7 +79,7 @@ module.exports = {
         $project: {
           days: {
             $map: {
-              input: Array.from(momentRange.by('day')).map( x => x.format("YYYY-MM-DD")),
+              input: Array.from(momentRange.by('day')).map((x) => x.format('YYYY-MM-DD')),
               as: 'date',
               in: {
                 $let: {
@@ -132,7 +132,7 @@ module.exports = {
       result.toArray((err, docs) => {
         console.log(err);
         console.log(docs);
-       // docs.reverse();
+        // docs.reverse();
         const labels = docs.map((x) => moment(x.date).format('MMM D'));
         const data = docs.map((x) => x.total);
         const label = 'Hours';
