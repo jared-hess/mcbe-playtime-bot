@@ -61,11 +61,7 @@ module.exports = {
             },
           },
         },
-      }, {
-        $sort: {
-          '_id.date': -1,
-        },
-      },
+      }, 
 
       {
         $project: {
@@ -136,8 +132,8 @@ module.exports = {
       result.toArray((err, docs) => {
         console.log(err);
         console.log(docs);
-        docs.reverse();
-        const labels = docs.map((x) => moment(x.date).format('ddd'));
+       // docs.reverse();
+        const labels = docs.map((x) => moment(x.date).format('MMM D'));
         const data = docs.map((x) => x.total);
         const label = 'Hours';
 
