@@ -21,6 +21,7 @@
   "homepage": "https://github.com/jared-hess/mcbe-playtime-bot#readme",
   "dependencies": {
     "csv": "^5.4.0",
+    "discord-fetch-all": "^3.0.2",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "husky": "^5.2.0",
