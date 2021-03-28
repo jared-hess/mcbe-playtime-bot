@@ -9,14 +9,26 @@ module.exports = {
   name: 'playtime',
   description: 'Get Playtime',
   cooldown: 5,
+  args: true,
   execute(message, args) {
+    let lookbackDays = 7;
     const { client } = message;
     const db = client.db.sessions;
+    if (args.length > 2) {
+      message.channel.send('Too many parameters supplied. Max number of parameters for this command is 2.');
+      return;
+    }
     const name = args[0];
+    if (args.length === 2) {
+      lookbackDays = parseInt(args[1], 10);
+    }
+    if (!lookbackDays) {
+      message.channel.send('Last parameter must be an integer if supplied');
+      return;
+    }
     const tempDate = new Date();
     console.log(tempDate);
-    tempDate.setDate(tempDate.getDate() - 7);
-    // tempDate.setDate(tempDate.getDate() - 30);
+    tempDate.setDate(tempDate.getDate() - lookbackDays);
     const startDate = new Date(tempDate.toDateString());
     console.log(startDate);
     const endDate = new Date();
@@ -144,7 +156,7 @@ module.exports = {
         });
         const chartEmbed = {
           title: 'Playtime',
-          description: `Playtime for user ${name} over the last week`,
+          description: `Playtime for user ${name} over the last ${lookbackDays} days`,
           image: {
             url: chart.getUrl(),
           },
