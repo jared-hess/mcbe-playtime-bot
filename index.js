@@ -10,6 +10,9 @@ const { SessionManager } = require('./utils/session-manager');
 const prefix = process.env.PREFIX;
 const token = process.env.DISCORD_TOKEN;
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const serverName = process.env.SERVER_NAME;
+const watchChannel = process.env.WATCH_CHANNEL;
+const commandChannel = process.env.COMMAND_CHANNEL;
 
 // DB
 MongoClient.connect(mongoUrl, (err, dbclient) => {
@@ -42,8 +45,8 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
 
   client.on('ready', async () => {
     console.log('I am ready!');
-    const guild = client.guilds.cache.find((x) => x.name === 'Telepath Test Server');
-    const channel = guild.channels.cache.find((x) => x.name === 'server-joins');
+    const guild = client.guilds.cache.find((x) => x.name === serverName);
+    const channel = guild.channels.cache.find((x) => x.name === watchChannel);
     const allMessages = await fetchAll.messages(channel, {
       reverseArray: true, // Reverse the returned array
       userOnly: false, // Only return messages by users
@@ -59,11 +62,13 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
 
   // Create an event listener for messages
   client.on('message', (message) => {
-    if (message.channel.name === 'server-joins') {
+    if (message.channel.name === watchChannel) {
       sessionManager.parseMessage(message);
     }
 
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    if (message.channel.name !== commandChannel) return;
 
     const args = splitargs(message.content.slice(prefix.length).trim());
     const commandName = args.shift().toLowerCase();
