@@ -7,11 +7,19 @@ module.exports = {
   description: 'Get Playtime Leader Board',
   cooldown: 5,
   execute(message, args) {
+    let lookbackDays = 30;
     const { client } = message;
     const db = client.db.sessions;
-    const name = args[0];
+    if (args.length === 1) {
+      lookbackDays = parseInt(args[0], 10);
+    }
+    if (args.length > 1) {
+      message.channel.send('Max of one argument supported');
+    }
+    if (!lookbackDays) {
+      message.channel.send('If argument is supplied, it must be an integer (number of days)');
+    }
     const tempDate = new Date();
-    const lookbackDays = 30;
     console.log(tempDate);
     // tempDate.setDate(tempDate.getDate() - 7);
     tempDate.setDate(tempDate.getDate() - lookbackDays);
@@ -19,12 +27,11 @@ module.exports = {
     console.log(startDate);
 
     const agg = [
-      // {
-      //   $match: {
-      //     name,
-      //     start: { $gt: startDate },
-      //   },
-      // },
+      {
+        $match: {
+          start: { $gt: startDate },
+        },
+      },
       {
         $group: {
           _id: {
