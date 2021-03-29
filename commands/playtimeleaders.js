@@ -19,17 +19,14 @@ module.exports = {
     if (!lookbackDays) {
       message.channel.send('If argument is supplied, it must be an integer (number of days)');
     }
-    const tempDate = new Date();
-    console.log(tempDate);
-    // tempDate.setDate(tempDate.getDate() - 7);
-    tempDate.setDate(tempDate.getDate() - lookbackDays);
-    const startDate = new Date(tempDate.toDateString());
-    console.log(startDate);
+
+    const endTime = moment().utc();
+    const startTime = moment(endTime).utc().subtract(lookbackDays - 1, 'days').startOf('day');
 
     const agg = [
       {
         $match: {
-          start: { $gt: startDate },
+          start: { $gt: startTime.toDate() },
         },
       },
       {

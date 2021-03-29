@@ -26,14 +26,11 @@ module.exports = {
       message.channel.send('Last parameter must be an integer if supplied');
       return;
     }
-    const tempDate = new Date();
-    console.log(tempDate);
-    tempDate.setDate(tempDate.getDate() - lookbackDays);
-    const startDate = new Date(tempDate.toDateString());
-    console.log(startDate);
-    const endDate = new Date();
 
-    const momentRange = moment.range(startDate, endDate);
+    const endTime = moment().utc();
+    const startTime = moment(endTime).utc().subtract(lookbackDays - 1, 'days').startOf('day');
+
+    const momentRange = moment.range(startTime, endTime);
     console.log(momentRange);
 
     console.log(Array.from(momentRange.by('day')).map((x) => x.format('YYYY-MM-DD')));
@@ -42,7 +39,7 @@ module.exports = {
       {
         $match: {
           name,
-          start: { $gt: startDate },
+          start: { $gt: startTime.toDate() },
         },
       }, {
         $project: {
