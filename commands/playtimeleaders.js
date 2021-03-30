@@ -58,12 +58,17 @@ module.exports = {
         const labels = docs.map((x) => x._id.name);
         const data = docs.map((x) => x.total);
         const label = 'Hours';
+        console.log(labels);
+        console.log(data);
 
         const chart = new QuickChart();
         chart.setConfig({
           type: 'horizontalBar',
           data: { labels, datasets: [{ label, data }] },
-        });
+        })
+          .setWidth(1000)
+          .setHeight(600);
+        console.log(chart.getUrl());
         const chartEmbed = {
           title: 'Leaders',
           description: `Playtime leaders for the last ${lookbackDays} days`,
