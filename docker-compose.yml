@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  bot:
+    build: .
+    environment:
+      - PREFIX
+      - DISCORD_TOKEN
+      - MONGO_URL=mongodb://mongo:27017
+      - SERVER_NAME
+      - WATCH_CHANNEL
+      - COMMAND_CHANNEL
+    depends_on:
+    - "mongo"
+  mongo:
+    image: "mongo"
+    ports:
+    - 27017:27017
