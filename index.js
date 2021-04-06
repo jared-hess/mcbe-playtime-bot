@@ -16,6 +16,10 @@ const commandChannel = process.env.COMMAND_CHANNEL;
 
 // DB
 MongoClient.connect(mongoUrl, (err, dbclient) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
   const db = dbclient.db('mytestingdb');
   const sessions = db.collection('sessions');
   sessions.createIndex({ session_id: 1 }, { unique: true });
@@ -47,23 +51,26 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     console.log('I am ready!');
     const guild = client.guilds.cache.find((x) => x.name === serverName);
     const channel = guild.channels.cache.find((x) => x.name === watchChannel);
-    const allMessages = await fetchAll.messages(channel, {
-      reverseArray: true, // Reverse the returned array
-      userOnly: false, // Only return messages by users
-      botOnly: true, // Only return messages by bots
-      pinnedOnly: false, // Only returned pinned messages
-    });
-    // console.log(allMessages);
-    allMessages.forEach((message) => {
-      console.log(message);
-      sessionManager.parseMessage(message);
+    sessionManager.pause().then(async () => {
+      const allMessages = await fetchAll.messages(channel, {
+        reverseArray: true, // Reverse the returned array
+        userOnly: false, // Only return messages by users
+        botOnly: true, // Only return messages by bots
+        pinnedOnly: false, // Only returned pinned messages
+      });
+      // console.log(allMessages);
+      allMessages.forEach((message) => {
+        console.log(message);
+        sessionManager.addMessage(message);
+      });
+      sessionManager.resume();
     });
   });
 
   // Create an event listener for messages
   client.on('message', (message) => {
     if (message.channel.name === watchChannel) {
-      sessionManager.parseMessage(message);
+      sessionManager.addMessage(message);
     }
 
     if (!message.content.startsWith(prefix) || message.author.bot) return;
