@@ -9,9 +9,13 @@ services:
       - SERVER_NAME
       - WATCH_CHANNEL
       - COMMAND_CHANNEL
+      - REDIS_URL=redis://redis:6379
     depends_on:
-    - "mongo"
+    - redis
+    - mongo
   mongo:
     image: "mongo"
     ports:
     - 27017:27017
+  redis:
+    image: redis:4.0-alpine
