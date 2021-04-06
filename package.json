@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/jared-hess/mcbe-playtime-bot#readme",
   "dependencies": {
+    "bull": "^3.22.0",
     "csv": "^5.4.0",
     "discord-fetch-all": "^3.0.2",
     "discord.js": "^12.5.1",
