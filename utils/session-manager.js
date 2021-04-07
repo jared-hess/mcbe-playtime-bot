@@ -1,11 +1,51 @@
+const Queue = require('bull');
+require('dotenv').config();
+
 class SessionManager {
   constructor(collection) {
     this.sessions = collection;
     this.logins = {};
+    this.messageQ = new Queue('messages', process.env.REDIS_URL);
+    this.messageQ.process((job, done) => {
+      const { data } = job;
+      this.parseMessage(data).then(() => done());
+    });
   }
 
-  parseMessage(message) {
+  async addMessage(message) {
     const { content } = message;
+    // const { guild } = message;
+    const timestamp = new Date(message.createdTimestamp);
+    console.log(`${content} ${timestamp}`);
+
+    // Lower number is higher priority, so we can use the timestamp as priority directly
+    const job = await this.messageQ.add(message, { priority: timestamp.getTime() });
+    return job;
+  }
+
+  async bulkAddMessage(messages) {
+    const jobInput = messages.map((x) => ({
+      data: x,
+      opts: { priority: x.createdTimestamp },
+    }));
+    const jobs = this.messageQ.addBulk(jobInput);
+    return jobs;
+  }
+
+  async resume() {
+    // Returns a promise
+    return this.messageQ.resume();
+  }
+
+  async pause() {
+    // Returns a promise
+    return this.messageQ.pause();
+  }
+
+  async parseMessage(message) {
+    let resultPromise;
+    const { content } = message;
+    // const { guild } = message;
     const timestamp = new Date(message.createdTimestamp);
     console.log(`${content} ${timestamp}`);
 
@@ -26,7 +66,7 @@ class SessionManager {
           name, session_id: id, start, end, duration,
         };
         // Ignore error due to duplicate docs
-        this.sessions.insertOne(session, (err, doc) => { if (err && err.code !== 11000) throw err; });
+        resultPromise = this.sessions.insertOne(session, (err, doc) => { if (err && err.code !== 11000) throw err; });
         delete this.logins[name];
       } else {
         console.log(`Disconnect for ${name} found with no connect. Skipping...`);
@@ -42,11 +82,14 @@ class SessionManager {
           name, session_id: id, start, end, duration,
         };
         // Ignore error due to duplicate docs
-        this.sessions.insertOne(session, (err, doc) => session, (err, doc) => { if (err && err.code !== 11000) throw err; });
+        resultPromise = this.sessions.insertOne(session, (err, doc) => session, (err, doc) => { if (err && err.code !== 11000) throw err; });
         delete this.logins[name];
       });
       this.logins = {};
+    } else {
+      resultPromise = Promise.resolve();
     }
+    return resultPromise;
   }
 }
 
