@@ -1,9 +1,10 @@
+/* eslint-disable linebreak-style */
 require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const { MongoClient } = require('mongodb');
 const splitargs = require('splitargs');
-const fetchAll = require('discord-fetch-all');
+const fetchAllMessages = require('./utils/fetch-all');
 const { SessionManager } = require('./utils/session-manager');
 
 // Env Vars
@@ -20,7 +21,7 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     console.log(err);
     return;
   }
-  const db = dbclient.db('mytestingdb');
+  const db = dbclient.db('playtimeBotDB');
   const sessions = db.collection('sessions');
   sessions.createIndex({ session_id: 1 }, { unique: true });
   const client = new Discord.Client();
@@ -51,16 +52,25 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     console.log('I am ready!');
     const guild = client.guilds.cache.find((x) => x.name === serverName);
     const channel = guild.channels.cache.find((x) => x.name === watchChannel);
-    sessionManager.pause().then(async () => {
-      const allMessages = await fetchAll.messages(channel, {
-        reverseArray: true, // Reverse the returned array
-        userOnly: false, // Only return messages by users
-        botOnly: true, // Only return messages by bots
-        pinnedOnly: false, // Only returned pinned messages
+
+    sessions.find().sort({ end: -1 }).limit(1).toArray()
+      .then((result) => {
+        let minTime;
+        if (result.length > 0) {
+          minTime = result[0].end.getTime();
+        }
+        sessionManager.pause().then(async () => {
+          const allMessages = await fetchAllMessages(channel, {
+            reverseArray: true, // Reverse the returned array
+            userOnly: false, // Only return messages by users
+            botOnly: true, // Only return messages by bots
+            pinnedOnly: false, // Only returned pinned messages
+            minTime,
+          });
+          sessionManager.bulkAddMessage(allMessages);
+          sessionManager.resume();
+        });
       });
-      sessionManager.bulkAddMessage(allMessages);
-      sessionManager.resume();
-    });
   });
 
   // Create an event listener for messages
