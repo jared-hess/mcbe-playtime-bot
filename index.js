@@ -58,11 +58,7 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
         botOnly: true, // Only return messages by bots
         pinnedOnly: false, // Only returned pinned messages
       });
-      // console.log(allMessages);
-      allMessages.forEach((message) => {
-        console.log(message);
-        sessionManager.addMessage(message);
-      });
+      sessionManager.bulkAddMessage(allMessages);
       sessionManager.resume();
     });
   });
