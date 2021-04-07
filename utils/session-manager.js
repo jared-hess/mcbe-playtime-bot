@@ -23,6 +23,15 @@ class SessionManager {
     return job;
   }
 
+  async bulkAddMessage(messages) {
+    const jobInput = messages.map((x) => ({
+      data: x,
+      opts: { priority: x.createdTimestamp },
+    }));
+    const jobs = this.messageQ.addBulk(jobInput);
+    return jobs;
+  }
+
   async resume() {
     // Returns a promise
     return this.messageQ.resume();
