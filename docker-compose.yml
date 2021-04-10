@@ -17,5 +17,9 @@ services:
     image: "mongo"
     ports:
     - 27017:27017
+    volumes:
+      - 'mongo_data:/data/db'
   redis:
     image: redis:4.0-alpine
+volumes:
+  mongo_data:
