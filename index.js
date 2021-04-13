@@ -83,7 +83,8 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
 
     if (message.channel.name !== commandChannel) return;
 
-    const args = splitargs(message.content.slice(prefix.length).trim());
+    // Replace incorrect quotes
+    const args = splitargs(message.content.slice(prefix.length).trim().replace(/“|”/g, '"'));
     const commandName = args.shift().toLowerCase();
 
     const command = client.commands.get(commandName)
