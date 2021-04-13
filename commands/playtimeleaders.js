@@ -64,7 +64,19 @@ module.exports = {
         const chart = new QuickChart();
         chart.setConfig({
           type: 'horizontalBar',
-          data: { labels, datasets: [{ label, data }] },
+          data: {
+            labels,
+            datasets: [{ label, data }],
+            options: {
+              scales: {
+                yAxes: [
+                  {
+                    autoSkip: false,
+                  },
+                ],
+              },
+            },
+          },
         })
           .setWidth(1000)
           .setHeight(600);
