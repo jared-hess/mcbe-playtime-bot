@@ -85,7 +85,7 @@ module.exports = {
           title: 'Leaders',
           description: `Playtime leaders for the last ${lookbackDays} days`,
           image: {
-            url: chart.getUrl(),
+            url: chart.getShortUrl(),
           },
         };
         message.channel.send({ embed: chartEmbed });
