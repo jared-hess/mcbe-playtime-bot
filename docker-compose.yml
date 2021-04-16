@@ -10,15 +10,23 @@ services:
       - WATCH_CHANNEL
       - COMMAND_CHANNEL
       - REDIS_URL=redis://redis:6379
+    command: sh -c './wait-for mongo:27017/test -- npm start'
     depends_on:
-    - redis
-    - mongo
+      - redis
+      - mongo
+    restart: on-failure:3
   mongo:
     image: "mongo"
     ports:
     - 27017:27017
     volumes:
       - 'mongo_data:/data/db'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
   redis:
     image: redis:4.0-alpine
 volumes:
