@@ -52,7 +52,7 @@ module.exports = {
 
     db.aggregate(agg, (cmdErr, result) => {
       assert.equal(null, cmdErr);
-      result.toArray( async (err, docs) => {
+      result.toArray(async (err, docs) => {
         console.log(docs);
         docs.reverse();
         const labels = docs.map((x) => x._id.name);
@@ -67,14 +67,14 @@ module.exports = {
           data: {
             labels,
             datasets: [{ label, data }],
-            options: {
-              scales: {
-                yAxes: [
-                  {
-                    autoSkip: false,
-                  },
-                ],
-              },
+          },
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  autoSkip: false,
+                },
+              }],
             },
           },
         })
