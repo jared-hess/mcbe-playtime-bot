@@ -53,6 +53,11 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     const guild = client.guilds.cache.find((x) => x.name === serverName);
     const channel = guild.channels.cache.find((x) => x.name === watchChannel);
 
+    // Set avatar
+    client.user.setAvatar('./avatar.png')
+      .then(() => console.log('New avatar set!'))
+      .catch(console.error);
+
     sessions.find().sort({ end: -1 }).limit(1).toArray()
       .then((result) => {
         let minTime;
