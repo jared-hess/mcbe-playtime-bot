@@ -52,7 +52,7 @@ module.exports = {
 
     db.aggregate(agg, (cmdErr, result) => {
       assert.equal(null, cmdErr);
-      result.toArray((err, docs) => {
+      result.toArray( async (err, docs) => {
         console.log(docs);
         docs.reverse();
         const labels = docs.map((x) => x._id.name);
@@ -85,7 +85,7 @@ module.exports = {
           title: 'Leaders',
           description: `Playtime leaders for the last ${lookbackDays} days`,
           image: {
-            url: chart.getShortUrl(),
+            url: await chart.getShortUrl(),
           },
         };
         message.channel.send({ embed: chartEmbed });
