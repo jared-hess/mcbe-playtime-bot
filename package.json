@@ -4,6 +4,7 @@
   "description": "A discord bot for displaying user playtime for mcbe bds servers.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" ",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "lint": "eslint --fix --ext .js *.js",
