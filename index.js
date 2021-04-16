@@ -38,16 +38,6 @@ MongoClient.connect(mongoUrl, (err, dbclient) => {
     client.commands.set(command.name, command);
   });
 
-  // const rawdata = fs.readFileSync('data.json');
-  // const data = JSON.parse(rawdata);
-  // const { messages } = data;
-  // Object.keys(messages).forEach((i) => {
-  //   const message = messages[i];
-
-  //   sessionManager.parseMessage(message);
-
-  // });
-
   client.on('ready', async () => {
     console.log('I am ready!');
     const guild = client.guilds.cache.find((x) => x.name === serverName);
