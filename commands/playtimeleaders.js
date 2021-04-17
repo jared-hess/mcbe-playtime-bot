@@ -79,7 +79,7 @@ module.exports = {
           },
         })
           .setWidth(1000)
-          .setHeight(600);
+          .setHeight(labels.length * 20);
         console.log(chart.getUrl());
         const chartEmbed = {
           title: 'Leaders',
