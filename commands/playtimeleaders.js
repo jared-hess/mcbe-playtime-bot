@@ -75,6 +75,11 @@ module.exports = {
                   autoSkip: false,
                 },
               }],
+              xAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                },
+              }],
             },
           },
         })
