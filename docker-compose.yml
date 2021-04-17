@@ -10,7 +10,7 @@ services:
       - WATCH_CHANNEL
       - COMMAND_CHANNEL
       - REDIS_URL=redis://redis:6379
-    command: sh -c './wait-for mongo:27017/test -- npm start'
+    command: sh -c './wait-for.sh mongo:27017/test -- npm start'
     depends_on:
       - redis
       - mongo
